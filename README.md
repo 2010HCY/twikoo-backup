@@ -12,6 +12,8 @@ Twikoo评论数据备份，使用CloudflareWorkers工作流实现自动备份，
 
 <img src="./images/备份成功.png" style="zoom:80%;" />
 
+部署很简单，点击一键部署按钮，然后根据提示设置数据库名，部署好后到Workers的设置里设置下变量，
+
 变量说明
 
 ```
@@ -20,3 +22,6 @@ TWIKOO_PASSWORD = "xxxxx"  #你的Twikoo后端密码
 BACKUP_KEEP_DAYS = "3" #工作流将保存几份备份
 ```
 
+然后打开Workers页面，点击开始备份或等待次日00：00自动备份，若下方出现了历史备份就说明成功了
+
+<img src="./images/评论不怕丢！使用Cloudflare大善人每日自动备份Twikoo评论数据/配置.png" style="zoom:80%;" />
