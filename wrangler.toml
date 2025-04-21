@@ -1,0 +1,24 @@
+name = "twikoo-backup"
+main = "src/index.ts"
+compatibility_date = "2024-10-22"
+
+[[workflows]]
+name = "twikoo-backup"
+binding = "TWIKOO_COMMENT_BACKUP"
+class_name = "TwikooCommentBackupWorkflow"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "twikoo_comments"
+database_id = "c950938a-4a13-43a5-b9bf-ee152d07e776"
+
+[vars]
+TWIKOO_URL = " "
+TWIKOO_PASSWORD = " "
+BACKUP_KEEP_DAYS = "3"
+
+[triggers]
+crons = ["0 0 * * *"]
+
+[observability.logs]
+enabled = true
