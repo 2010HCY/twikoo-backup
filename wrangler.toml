@@ -15,7 +15,7 @@ database_id = "c950938a-4a13-43a5-b9bf-ee152d07e776"
 [vars]
 TWIKOO_URL = " "
 TWIKOO_PASSWORD = " "
-BACKUP_KEEP_DAYS = "3"
+BACKUP_KEEP = "3"
 
 [triggers]
 crons = ["0 0 * * *"]

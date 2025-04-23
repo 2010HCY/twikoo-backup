@@ -69,9 +69,14 @@ export class TwikooCommentBackupWorkflow extends WorkflowEntrypoint<Env, {}> {
       })
       // 3. 自动删老备份
       await step.do("clean D1", async () => {
-        await DB.prepare(
-          `DELETE FROM comments_backup WHERE date < ?`
-        ).bind(getKeepStartDateStr(new Date(), keepDays)).run()
+      await DB.prepare(`
+        DELETE FROM comments_backup
+        WHERE id NOT IN (
+          SELECT id FROM comments_backup
+          ORDER BY id DESC
+          LIMIT ?
+        )
+      `).bind(keepDays).run();
       })
       logEvent("auto_backup", { success: true, date: dateStr })
       return { status: "success", date: dateStr, savedRows: 1 }
@@ -213,7 +218,7 @@ export default {
     // 查询列表
     if (url.pathname.endsWith("/list") && req.method === "GET") {
       const { results } = await env.DB.prepare(
-        `SELECT id, date, LENGTH(content) AS size FROM comments_backup ORDER BY date DESC`
+        `SELECT id, date, LENGTH(content) AS size FROM comments_backup ORDER BY id DESC`
       ).all();
       return Response.json(results);
     }
@@ -248,7 +253,20 @@ export default {
       }
     }
 
-    // favicon 等均404
     return new Response("", { status: 404 });
+  },
+
+  async scheduled(
+    controller: ScheduledController,
+    env: Env,
+    ctx: ExecutionContext
+  ) {
+    try {
+      // 启动备份实例
+      const instance = await env.TWIKOO_COMMENT_BACKUP.create();
+      logEvent("cron_backup", { success: true, instanceId: instance.id, cron: controller.cron });
+    } catch (e) {
+      logEvent("cron_backup", { success: false, error: String(e), cron: controller.cron });
+    }
   }
 };

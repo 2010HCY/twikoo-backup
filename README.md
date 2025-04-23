@@ -19,7 +19,7 @@ Twikoo评论数据备份，使用CloudflareWorkers工作流实现自动备份，
 ```
 TWIKOO_URL = "https://xxxxx/.netlify/functions/twikoo" #你的Twikoo后端地址
 TWIKOO_PASSWORD = "xxxxx"  #你的Twikoo后端密码
-BACKUP_KEEP_DAYS = "3" #工作流将保存几份备份
+BACKUP_KEEP = "3" #工作流将保存几份备份
 ```
 
 然后打开Workers页面，点击开始备份或等待次日00：00自动备份，若下方出现了历史备份就说明成功了
