@@ -16,6 +16,8 @@ database_id = "c950938a-4a13-43a5-b9bf-ee152d07e776"
 TWIKOO_URL = " "
 TWIKOO_PASSWORD = " "
 BACKUP_KEEP = "3"
+ADMIN_PASSWORD = "admin12345678"
+COOKIE_EXPIRES_DAYS = "0"
 
 [triggers]
 crons = ["0 0 * * *"]
