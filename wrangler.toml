@@ -24,3 +24,7 @@ crons = ["0 0 * * *"]
 
 [observability.logs]
 enabled = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"

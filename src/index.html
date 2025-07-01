@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Twikoo评论备份面板</title>
+  <style>
+    body { font-family:sans-serif; background:#f5f6fa; color:#222; background-color: oklch(0.95 0.025 112) }
+    #main { max-width:560px; margin:60px auto; background:#fff; border-radius:20px; box-shadow:0 1px 8px #9992; padding:42px 32px 32px 32px; }
+    .center { text-align:center; }
+    button {
+      padding: 12px 44px; background: #a3a300; color:#fff; border-radius: 8px;
+      border: none; font-size: 1.2em; margin-bottom: 12px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    button[disabled] { background: #c6c60a; cursor:not-allowed; }
+    .status { height:20px; margin-bottom:30px; min-height:24px; font-size: 1em; }
+    .rectangle { background: #f2f3f7; border-radius: 12px; margin-top:30px; padding: 22px 20px; }
+    .rowlist { margin:0; padding:0; list-style:none; }
+    .rowlist li {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid #ececec; font-size:1.1em;
+    }
+    .rowlist li:last-child { border-bottom:none; }
+    .id { font-size:1.2em; }
+    .date { margin-left:6px; color: #353; }
+    .dlbtn {
+      background: #7a9f13; color: #fff; text-decoration:none;border: none; border-radius: 6px; padding: 6px 16px;
+      cursor: pointer; font-size:1em;
+    }    
+  </style>
+</head>
+<body>
+<div id="main">
+  <div class="center">
+    <button id="backupBtn">开始备份</button>
+    <div class="status" id="statusMsg"></div>
+  </div>
+  <div class="rectangle">
+    <h3 style="margin-top:0.2em">历史备份</h3>
+    <ul id="rows" class="rowlist"></ul>
+    <div id="nodata" style="color:#888; text-align:center; margin-top:16px; display:none;">暂无备份</div>
+  </div>
+</div>
+<script>
+const listUrl = location.pathname + "list";
+const downloadBase = location.pathname + "download/";
+const backupUrl = location.pathname + "backup"; 
+
+const $ = id => document.getElementById(id);
+function showStatus(msg, color) {
+  $('statusMsg').textContent = msg;
+  $('statusMsg').style.color = color || '#222';
+}
+async function loadList() {
+  const r = await fetch(listUrl);
+  const arr = await r.json();
+  const ul = $('rows');
+  ul.innerHTML = '';
+  if (!arr || arr.length == 0) {
+    $('nodata').style.display = '';
+    return;
+  }
+  $('nodata').style.display = 'none';
+  arr.forEach((row, i) => {
+    const li = document.createElement('li');
+    let kb = (row.size / 1024).toFixed(1);
+    li.innerHTML =
+      '<span class="id">#' + (i+1) + '</span>' +
+      '<span class="date">' + row.date + '</span>' +
+      '<span class="filesize" style="margin-left:8px;color:#888;">(' + kb + 'KB)</span>' +
+      '<a class="dlbtn" href="' + downloadBase + row.id + '" download="twikoo-comment-' + row.date + '.json" target="_blank">下载</a>';
+    ul.appendChild(li);
+  });
+}
+
+$('backupBtn').onclick = async function() {
+  this.disabled = true;
+  showStatus("正在备份...", "#4e8cff");
+  try {
+    const resp = await fetch(backupUrl, { method: "POST" });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    if (data.msg && data.msg.match(/已启动/)) {
+      showStatus("备份启动，稍等刷新...", "#222");
+      setTimeout(async () => {
+        await loadList();
+        showStatus("备份完成！","#258c34");
+        setTimeout(()=>showStatus(''),1600);
+      }, 3500);
+    } else {
+      showStatus("启动失败: "+JSON.stringify(data), "#d8000c");
+      $('backupBtn').disabled = false;
+    }
+  } catch(e) {
+    showStatus("备份出错："+e.message, "#d8000c");
+    $('backupBtn').disabled = false;
+  }
+};
+
+window.onload = loadList;
+</script>
+</body>
+</html>
