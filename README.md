@@ -30,7 +30,7 @@ COOKIE_EXPIRES_DAYS = "0" #cookie过期时间
 
 然后打开Workers页面，点击开始备份或等待次日00：00自动备份，若下方出现了历史备份就说明成功了
 
-<img src="./images/评论不怕丢！使用Cloudflare大善人每日自动备份Twikoo评论数据/配置.png" style="zoom:80%;" />
+<img src="./images/配置.png" style="zoom:80%;" />
 
 ## 更新日志
 
